@@ -1,0 +1,56 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+#dayofweek:hover{
+	-fx-background-color: #fcf2ec;
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+}
+#title{
+	-fx-background-radius: 15px;
+	-fx-background-color: white;
+}
+#pre:hover{
+	-fx-scale-y: 2;
+	-fx-scale-x: 2;
+	-fx-fill: red;
+}
+#next:hover{
+	-fx-scale-y: 2;
+	-fx-scale-x: 2;
+	-fx-fill: red;
+}
+#tabbutton{
+	-fx-border-radius: 12 12 0 0;	
+	 -fx-background-color:   #e3e4e6;
+	 -fx-border-width: 1 1 0 1;
+	 -fx-border-color: black;
+}
+#chooseColor{
+	-fx-background-radius: 15px;
+	-fx-background-color: #fcf2ec;
+}
+
+#buttonColor{
+	-fx-background-radius: 15px;
+}
+
+#notepane{
+	-fx-border-radius: 15 15 15 15;
+	-fx-background-color: transparent;
+	-fx-background-color: rgba(0,0,0,0);
+	-fx-border-width: 0 0 1 0;
+	-fx-border-color: white;
+}
+#searchbox{
+	-fx-background-color: transparent;
+}
+#btnFooter{
+	-fx-background-color: transparent;
+	-fx-border-color: #383734;
+	-fx-border-width: 0.5 0 0.5 0;
+}
+#inforClass{
+	-fx-background-radius: 15px;
+	-fx-background-color: white;
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+	-fx-text-fill: #63bca9;
+}
