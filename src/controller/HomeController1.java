@@ -20,6 +20,7 @@ import entity.Student;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -44,6 +45,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -261,7 +264,7 @@ public class HomeController1 extends Thread implements Initializable {
 	@FXML
 	void nextWeek(MouseEvent event) {
 		week++;
-		setBlock(String.valueOf(week), "2022/01/24-2022/01/30");
+//		setBlock(String.valueOf(week), "2022/01/24-2022/01/30");
 		TimeHandling timeHandling = new TimeHandling();
 		String time = "tuần " + week + "(";
 		time = time + timeHandling.startWeekToEnd(String.valueOf(week)) + ")";
@@ -273,7 +276,7 @@ public class HomeController1 extends Thread implements Initializable {
 	void preWeek(MouseEvent event) {
 		if (week > 1) {
 			week--;
-			setBlock(String.valueOf(week), "2022/01/24-2022/01/30");
+//			setBlock(String.valueOf(week), "2022/01/24-2022/01/30");
 			TimeHandling timeHandling = new TimeHandling();
 			String time = "tuần " + week + "(";
 			time = time + timeHandling.startWeekToEnd(String.valueOf(week)) + ")";
@@ -288,8 +291,12 @@ public class HomeController1 extends Thread implements Initializable {
 		titleWorkDetail.setText("chi tiết công việc ngày: " + value);
 		if (listWeek.getValue() != null) {
 			String s[] = listWeek.getValue().split(" ");
-			setBlock(s[1], "2022/01/24-2022/01/30");
+			TimeHandling timeHandling = new TimeHandling();
+			setBlock(s[1], timeHandling.startWeekToEnd(s[1]));
 		}
+
+		// set gia tri cho pane chi tiết công việc ngày
+		setScoreWorkDetail(String.valueOf(value));
 	}
 
 	@FXML
@@ -320,7 +327,7 @@ public class HomeController1 extends Thread implements Initializable {
 		toolTip();
 		setListLecturers();
 		setLableWeek("2022/01/24-2022/01/30");
-		setScoreWorkDetail();
+		setScoreWorkDetail("");
 
 	}
 
@@ -364,6 +371,7 @@ public class HomeController1 extends Thread implements Initializable {
 		setStyleBlock();
 		TimeHandling timeHandling = new TimeHandling();
 		List<String> listWeeks = new ArrayList<String>();
+		// set gia tri cac ngay trong tuan
 		listWeeks = timeHandling.getListDayOnWeek(week);
 		for (int i = 0; i < 7; i++) {
 			VBox vBox = new VBox();
@@ -375,12 +383,12 @@ public class HomeController1 extends Thread implements Initializable {
 			label.setAlignment(Pos.CENTER);
 			label.setTextFill(Color.rgb(0, 160, 134));
 
-			TextField textField = new TextField();
-			textField.setPromptText("ghi chú...!");
-			textField.setPrefWidth(2000);
-			textField.setPrefHeight(30);
-			textField.setStyle("-fx-background-color: transparent");
-			vBox.setMargin(textField, new Insets(0, 10, 10, 10));
+			TextField notefield = new TextField();
+			notefield.setPromptText("ghi chú...!");
+			notefield.setPrefWidth(2000);
+			notefield.setPrefHeight(30);
+			notefield.setStyle("-fx-background-color: transparent");
+			vBox.setMargin(notefield, new Insets(0, 10, 10, 10));
 
 			ScrollPane scrollPane = new ScrollPane();
 			AnchorPane anchorPane = new AnchorPane();
@@ -399,447 +407,37 @@ public class HomeController1 extends Thread implements Initializable {
 					switch (p.getDayOfWeek()) {
 					case "Hai":
 						if (i == 0) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 					case "Ba":
 						if (i == 1) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 					case "Tư":
 						if (i == 2) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 					case "Năm":
 						if (i == 3) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 					case "Sáu":
 						if (i == 4) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 					case "Bảy":
 						if (i == 5) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 					case "CN":
 						if (i == 6) {
-							HBox hBox = new HBox();
-							Separator separator = new Separator();
-							separator.setMinSize(200, 10);
-							vboxMain.getChildren().add(hBox);
-							vboxMain.getChildren().add(separator);
-							hBox.setPadding(new Insets(20, 0, 0, 0));
-							VBox vBox2 = new VBox();
-							VBox vBox3 = new VBox();
-							hBox.getChildren().add(vBox2);
-							hBox.getChildren().add(vBox3);
-
-							// cot ten thuoc tinh
-							Label subCode = new Label("mã môn học");
-							Label subName = new Label("tên môn học");
-							Label subGroup = new Label("nhóm môn học");
-							Label classCode = new Label("mã lớp");
-							Label practiceGroup = new Label("nhóm thực hành");
-							Label startTimeToEnd = new Label("phòng học: ");
-							Label location = new Label("thời gian từ: ");
-							Label listStd = new Label("danh sách sinh viên: ");
-							ArrayList<Label> proslist = new ArrayList<Label>();
-							proslist.add(subCode);
-							proslist.add(subName);
-							proslist.add(subGroup);
-							proslist.add(classCode);
-							proslist.add(practiceGroup);
-							proslist.add(startTimeToEnd);
-							proslist.add(location);
-							proslist.add(listStd);
-							for (Label l : proslist) {
-								l.setPadding(new Insets(0, 0, 0, 10));
-							}
-							vBox2.getChildren().addAll(proslist);
-
-							// set cot gia tri
-							Label subCodeData = new Label(p.getSubCode());
-							Label subNameData = new Label(p.getSubName());
-							Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
-							Label classCodeData = new Label(p.getClassCode());
-							Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
-							Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
-							Label locationData = new Label(String.valueOf(p.getLocation()));
-							Label listStdData = new Label("xem danh sách");
-							listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-								setTableStudent(p.getLinkListStd());
-							});
-							ArrayList<Label> listLabe = new ArrayList<Label>();
-							listLabe.add(subCodeData);
-							listLabe.add(subNameData);
-							listLabe.add(subGroupData);
-							listLabe.add(classCodeData);
-							listLabe.add(practiceGroupData);
-							listLabe.add(startToEndData);
-							listLabe.add(locationData);
-							listLabe.add(listStdData);
-							for (Label l : listLabe) {
-								l.setPadding(new Insets(0, 0, 0, 20));
-							}
-							vBox3.getChildren().addAll(listLabe);
+							setValueForBlock(vboxMain, p);
 						}
 						break;
 
@@ -852,8 +450,20 @@ public class HomeController1 extends Thread implements Initializable {
 
 			vBox.getChildren().add(label);
 			vBox.getChildren().add(scrollPane);
-			vBox.getChildren().add(textField);
+			vBox.getChildren().add(notefield);
 
+			// bắt sự kiện nhấn phím enter của notefield
+			String dayOfWeek = listWeeks.get(i);
+			notefield.setOnKeyReleased(new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent k) {
+					  if (k.getCode().equals(KeyCode.ENTER)) {
+						  	// lay ngay thang va thu để lưu dữ liệu note đúng vị trí
+			                System.out.println(notefield.getText()+" "+ dayOfWeek);
+			                notefield.setText("");
+			            }
+				}
+			});
 			listBlock.get(i).getChildren().add(vBox);
 		}
 	}
@@ -915,35 +525,80 @@ public class HomeController1 extends Thread implements Initializable {
 
 	}
 
-	public void setScoreWorkDetail() {
+	public void setScoreWorkDetail(String workDay) {
 		VBox vBox = new VBox();
+		scollWorkDetail.getChildren().clear();
 		scollWorkDetail.getChildren().add(vBox);
+		Timestamp timestamps = null;
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date parsedDate = dateFormat.parse(workDay);
+			timestamps = new java.sql.Timestamp(parsedDate.getTime());
+			System.out.println(timestamps);
+		} catch (Exception e) {
 
-		for (int i = 0; i < 3; i++) {
-			HBox hBox = new HBox();
-			Separator separator = new Separator();
-			separator.setPrefSize(550, 5);
-			vBox.getChildren().add(hBox);
-			vBox.getChildren().add(separator);
+		}
+		for (RawScheduleDetail p : ListRawSchedules) {
+			if (p.getTime().equals(timestamps)) {
+				HBox hBox = new HBox();
+				Separator separator = new Separator();
+				separator.setPrefSize(550, 5);
+				vBox.getChildren().add(hBox);
+				vBox.getChildren().add(separator);
 
-			VBox vBoxProsName = new VBox();
-			hBox.getChildren().add(vBoxProsName);
-			Label subCode = new Label("mã môn học");
-			Label subName = new Label("tên môn học");
-			Label subGroup = new Label("nhóm môn học");
-			Label classCode = new Label("mã lớp");
-			Label practiceGroup = new Label("nhóm thực hành");
-			ArrayList<Label> proslist = new ArrayList<Label>();
-			proslist.add(subCode);
-			proslist.add(subName);
-			proslist.add(subGroup);
-			proslist.add(classCode);
-			proslist.add(practiceGroup);
-			for (Label l : proslist) {
-				l.setPadding(new Insets(0, 0, 0, 10));
+				VBox vBoxProsName = new VBox();
+				VBox vBox2 = new VBox();
+				hBox.getChildren().add(vBoxProsName);
+				hBox.getChildren().add(vBox2);
+				Label subCode = new Label("mã môn học");
+				Label subName = new Label("tên môn học");
+				Label subGroup = new Label("nhóm môn học");
+				Label classCode = new Label("mã lớp");
+				Label practiceGroup = new Label("nhóm thực hành");
+				Label startTimeToEnd = new Label("phòng học: ");
+				Label location = new Label("thời gian từ: ");
+				Label listStd = new Label("danh sách sinh viên: ");
+				ArrayList<Label> proslist = new ArrayList<Label>();
+				proslist.add(subCode);
+				proslist.add(subName);
+				proslist.add(subGroup);
+				proslist.add(classCode);
+				proslist.add(practiceGroup);
+				proslist.add(startTimeToEnd);
+				proslist.add(location);
+				proslist.add(listStd);
+				for (Label l : proslist) {
+					l.setPadding(new Insets(0, 0, 0, 10));
+				}
+				vBoxProsName.getChildren().addAll(proslist);
+				// set cot gia tri
+
+				Label subCodeData = new Label(p.getSubCode());
+				Label subNameData = new Label(p.getSubName());
+				Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
+				Label classCodeData = new Label(p.getClassCode());
+				Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
+				Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
+				Label locationData = new Label(String.valueOf(p.getLocation()));
+				Label listStdData = new Label("xem danh sách");
+				listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+					setTableStudent(p.getLinkListStd());
+				});
+				ArrayList<Label> listLabe = new ArrayList<Label>();
+				listLabe.add(subCodeData);
+				listLabe.add(subNameData);
+				listLabe.add(subGroupData);
+				listLabe.add(classCodeData);
+				listLabe.add(practiceGroupData);
+				listLabe.add(startToEndData);
+				listLabe.add(locationData);
+				listLabe.add(listStdData);
+				for (Label l : listLabe) {
+					l.setPadding(new Insets(0, 0, 0, 20));
+				}
+				vBox2.getChildren().addAll(listLabe);
+				hBox.setPadding(new Insets(20, 0, 0, 0));
 			}
-			vBoxProsName.getChildren().addAll(proslist);
-			hBox.setPadding(new Insets(20, 0, 0, 0));
 		}
 
 	}
@@ -994,5 +649,68 @@ public class HomeController1 extends Thread implements Initializable {
 		col_surName.setCellValueFactory(new PropertyValueFactory<>("surName"));
 		col_stdCode.setCellValueFactory(new PropertyValueFactory<>("stdCode"));
 		col_stdName.setCellValueFactory(new PropertyValueFactory<>("name"));
+	}
+
+	public void setValueForBlock(VBox vboxMain, RawScheduleDetail p) {
+		HBox hBox = new HBox();
+		Separator separator = new Separator();
+		separator.setMinSize(200, 10);
+		vboxMain.getChildren().add(hBox);
+		vboxMain.getChildren().add(separator);
+		hBox.setPadding(new Insets(20, 0, 0, 0));
+		VBox vBox2 = new VBox();
+		VBox vBox3 = new VBox();
+		hBox.getChildren().add(vBox2);
+		hBox.getChildren().add(vBox3);
+
+		// cot ten thuoc tinh
+		Label subCode = new Label("mã môn học");
+		Label subName = new Label("tên môn học");
+		Label subGroup = new Label("nhóm môn học");
+		Label classCode = new Label("mã lớp");
+		Label practiceGroup = new Label("nhóm thực hành");
+		Label startTimeToEnd = new Label("phòng học: ");
+		Label location = new Label("thời gian từ: ");
+		Label listStd = new Label("danh sách sinh viên: ");
+		ArrayList<Label> proslist = new ArrayList<Label>();
+		proslist.add(subCode);
+		proslist.add(subName);
+		proslist.add(subGroup);
+		proslist.add(classCode);
+		proslist.add(practiceGroup);
+		proslist.add(startTimeToEnd);
+		proslist.add(location);
+		proslist.add(listStd);
+		for (Label l : proslist) {
+			l.setPadding(new Insets(0, 0, 0, 10));
+		}
+		vBox2.getChildren().addAll(proslist);
+
+		// set cot gia tri
+		Label subCodeData = new Label(p.getSubCode());
+		Label subNameData = new Label(p.getSubName());
+		Label subGroupData = new Label(String.valueOf(p.getGroupSub()));
+		Label classCodeData = new Label(p.getClassCode());
+		Label practiceGroupData = new Label(String.valueOf(p.getPractiveTeam()));
+		Label startToEndData = new Label(String.valueOf(p.getStartTimeToEnd()));
+		Label locationData = new Label(String.valueOf(p.getLocation()));
+		Label listStdData = new Label("xem danh sách");
+		listStdData.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			setTableStudent(p.getLinkListStd());
+		});
+
+		ArrayList<Label> listLabe = new ArrayList<Label>();
+		listLabe.add(subCodeData);
+		listLabe.add(subNameData);
+		listLabe.add(subGroupData);
+		listLabe.add(classCodeData);
+		listLabe.add(practiceGroupData);
+		listLabe.add(startToEndData);
+		listLabe.add(locationData);
+		listLabe.add(listStdData);
+		for (Label l : listLabe) {
+			l.setPadding(new Insets(0, 0, 0, 20));
+		}
+		vBox3.getChildren().addAll(listLabe);
 	}
 }

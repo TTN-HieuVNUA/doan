@@ -96,6 +96,6 @@ public class TimeHandling {
 	}
 	public static void main(String[] args) {
 		TimeHandling timeHandling = new TimeHandling();
-		System.out.println(timeHandling.getListDayOnWeek("1"));;
+		System.out.println(timeHandling.startWeekToEnd("1"));;
 	}
 }
